@@ -63,6 +63,7 @@ def own_test(args,sec,dic):
     loss = lossf(train_logit, train_target)
     loss.backward()
     meta_optimizer.step()
+    print(f'test:loss:{loss.item():.4f}')
     addvalue(writer,'loss:test',loss.item())
 
     accuracy = 0
@@ -75,6 +76,6 @@ def own_test(args,sec,dic):
             output=model(raw)
             test_loss.append(lossf(output,mask).item())
 
-    print(f'loss:{np.mean(test_loss):.4f}')
+    print(f'acc:test {1-np.mean(test_loss):.4f}')
     addvalue(writer,'acc:test',1-np.mean(test_loss))
 

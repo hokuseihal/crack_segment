@@ -8,6 +8,7 @@ import glob
 import numpy as np
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
+import os
 
 class MetaCOCOMaskDataset(torch.utils.data.Dataset):
     def __init__(self,trainfolder,valfolder,trainjson,valjson,n_way,k_shot,size=(64,64),transform=None):
@@ -35,7 +36,7 @@ class MetaCOCOMaskDataset(torch.utils.data.Dataset):
         x=F.interpolate(x,self.size)
         return x
     def __len__(self):
-        return len(self.classes)
+        return len(os.listdir(self.trainfolder))
     def __getitem__(self, item):
         train_raw=[]
         train_mask=[]
