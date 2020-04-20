@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--folder', type=str,
         help='Path to the folder the data is downloaded to.',default='data')
-    parser.add_argument('--num-shots', type=int, default=1,
+    parser.add_argument('--num-shots', type=int, default=5,
         help='Number of examples per class (k in "k-shot", default: 5).')
     #parser.add_argument('--num-ways', type=int, default=5,
     #    help='Number of classes per task (N in "N-way", default: 5).')
