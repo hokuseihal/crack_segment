@@ -57,33 +57,28 @@ class MetaOWNCrackDataset(torch.utils.data.Dataset):
         super(MetaOWNCrackDataset,self).__init__()
         self.folder=folder
         self.k_shot=k_shot
-        self.transform=transform if transform else Compose([Grayscale(),ToTensor(),lambda x:F.interpolate(x.unsqueeze(0),self.size)])
+        self.transform=transform if transform else Compose([Grayscale(),ToTensor(),lambda x:F.interpolate(x.unsqueeze(0),self.size).squeeze(0)])
         self.trainimg=[]
         self.imgs=glob.glob(f'{self.folder}/raw/*.jpg')
         self.size = size
         self.tomask=lambda x:x.replace('raw','mask').replace('jpg','png')
         self.batchsize=batchsize
+        self.trainimg = random.sample(self.imgs, self.k_shot)
+        self.testimg=list(set(self.imgs)-set(self.trainimg))
     def __len__(self):
-        return 1
+        return len(self.testimg)
+
     def __getitem__(self, item):
+        imgp=self.testimg[item]
+        return self.transform(Image.open(imgp)), self.transform(Image.open(self.tomask(imgp)))
+
+    def train(self):
         pass
         #one class (1 - way)
         #select random file (K- shot)
-        self.trainimg=random.sample(self.imgs,self.k_shot)
-        raw=torch.cat([self.transform(Image.open(imgp)) for imgp in self.trainimg])
-        mask=torch.cat([self.transform(Image.open(self.tomask(imgp))) for imgp in self.trainimg])
+
+        raw=torch.stack([self.transform(Image.open(imgp)) for imgp in self.trainimg])
+        mask=torch.stack([self.transform(Image.open(self.tomask(imgp))) for imgp in self.trainimg])
         #return train[raw(K,C,H,W), mask(K,C,H,W)], test[raw(K,C,H,W), mask(K,C,H,W)]
         return {'train':(raw,mask)}
 
-    def test(self):
-        raw = []
-        mask = []
-        for idx,imgp in enumerate(set(self.imgs)-set(self.trainimg)):
-            raw.append(self.transform(Image.open(imgp)))
-            mask.append(self.transform(Image.open(self.tomask(imgp))))
-            if idx%self.batchsize==self.batchsize-1:
-                ret_raw=torch.cat(raw)
-                ret_mask=torch.cat(mask)
-                raw=[]
-                mask=[]
-                yield ret_raw,ret_mask

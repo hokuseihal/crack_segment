@@ -12,16 +12,15 @@ def maml_operation(args,sec,dic):
     accf=dic['accf']
     writer=dic['writer']
 
-    for idx in range(len(dataloader.dataset)):
+    for idx ,batch in enumerate(dataloader):
         outer_loss = torch.tensor(0., device=args.device)
         accuracy = torch.tensor(0., device=args.device)
-        for batch_idx in range(args.batch_size):
-            batch=dataloader.dataset[batch_idx]
+        train_inputs, train_targets = batch['train']
+        test_inputs, test_targets = batch['test']
+        for train_input,train_target,test_input,test_target in zip(train_inputs,train_targets,test_inputs,test_targets):
             model.zero_grad()
-            train_input, train_target = batch['train']
             train_input = train_input.to(device=args.device)
             train_target = train_target.to(device=args.device)
-            test_input, test_target = batch['test']
             test_input = test_input.to(device=args.device)
             test_target = test_target.to(device=args.device)
 
@@ -54,7 +53,7 @@ def own_test(args,sec,dic):
     accf=dic['accf']
     writer=dic['writer']
 
-    batch=dataloader.dataset[0]
+    batch=dataloader.dataset.train()
     model.zero_grad()
     train_input, train_target = batch['train']
     train_input = train_input.to(device=args.device)
@@ -70,12 +69,12 @@ def own_test(args,sec,dic):
     test_loss=[]
     #num dataset.test size
     with torch.no_grad():
-        for idx,(raw,mask) in enumerate(dataloader.dataset.test()):
+        for idx,(raw,mask) in enumerate(dataloader):
             raw=raw.to(args.device)
             mask=mask.to(args.device)
             output=model(raw)
             test_loss.append(lossf(output,mask).item())
 
-    print(f'{np.mean(test_loss)/(idx+1):.4f}')
+    print(f'loss:{np.mean(test_loss):.4f}')
     addvalue(writer,'acc:test',1-np.mean(test_loss))
 

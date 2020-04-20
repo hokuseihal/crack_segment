@@ -47,8 +47,8 @@ if __name__ == '__main__':
         help='Path to the output folder for saving the model (optional).')
     parser.add_argument('--batch-size', type=int, default=32,
         help='Number of tasks in a mini-batch of tasks (default:32).')
-    parser.add_argument('--num-batches', type=int, default=1,
-        help='Number of batches the model is trained over (default: 100).')
+    parser.add_argument('--num-batches', type=int, default=50,
+        help='Number of batches the model is trained over (default: 50).')
     parser.add_argument('--num-workers', type=int, default=multiprocessing.cpu_count(),
         help='Number of workers for data loading (default: max).')
     parser.add_argument('--download', action='store_true',
