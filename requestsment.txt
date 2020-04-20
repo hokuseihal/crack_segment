@@ -1,4 +1,4 @@
-torch==1.3.0
-torchmeta==1.3.0
-torchvison
+torch==1.2.0
+torchmeta==1.2.0
+torchvison==0.4.0
 matplotlib
